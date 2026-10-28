@@ -1,0 +1,30 @@
+const path=require('path'), fs=require('fs');
+const { chromium, chromePath } = require('./_paths.cjs');
+const keep = JSON.parse(process.argv[2]||'[]');
+const outName = process.argv[3]||'only';
+const cfg = JSON.parse(process.argv[4]||'{}');
+(async()=>{
+  const b=await chromium.launch({executablePath: chromePath,args:['--no-sandbox','--disable-dev-shm-usage']});
+  const p=await b.newPage({viewport:{width:1100,height:900}});
+  await p.goto('file://'+path.resolve('dist/index.html'));
+  await p.waitForTimeout(2200);
+  await p.addScriptTag({path:path.resolve('tools/raster.core.js')});
+  const info = await p.evaluate(([keep,cfg])=>{
+    const d=window.__dbg;
+    document.getElementById('guide').style.display='none';
+    document.getElementById('loading').style.display='none';
+    d.parts.forEach(pt=>{ pt.mesh.visible = keep.length===0 || keep.indexOf(pt.id)>=0; });
+    const o=d.orbit;
+    o.autoFit=false; o.autoRotate=false;
+    const r=cfg.r||8, th=cfg.th===undefined?Math.PI:cfg.th, ph=cfg.ph===undefined?Math.PI/2:cfg.ph;
+    o.cur.r=o.des.r=r; o.cur.th=o.des.th=th; o.cur.ph=o.des.ph=ph;
+    o.cur.tx=o.des.tx=cfg.tx||0; o.cur.ty=o.des.ty=cfg.ty||0; o.cur.tz=o.des.tz=cfg.tz||0;
+    d.syncCamera();
+    return {parts:d.parts.filter(x=>x.mesh.visible).map(x=>x.id)};
+  },[keep,cfg]);
+  console.log(JSON.stringify(info));
+  const res = await p.evaluate(()=>window.__raster({w:900,h:760}));
+  fs.writeFileSync('shots/'+outName+'.png', Buffer.from(res.url.split(',')[1],'base64'));
+  console.log(outName,'tris='+res.tris,'meshes='+res.meshes);
+  await b.close();
+})();

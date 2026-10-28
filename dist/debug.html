@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HUAWEI Mate 90 Pro Max 典藏版 · 3D 结构拆解</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="scene"></canvas>
+
+  <div class="bg-layer bg-grid"></div>
+  <div class="bg-layer bg-halo"></div>
+  <div class="bg-layer bg-vignette"></div>
+  <div class="bg-layer bg-scan"></div>
+  <div class="bg-layer bg-noise"></div>
+
+  <!-- ============ 顶栏 ============ -->
+  <header id="topbar">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <defs>
+            <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#f0d9a8"/>
+              <stop offset="0.45" stop-color="#c9a86a"/>
+              <stop offset="1" stop-color="#8d6f3c"/>
+            </linearGradient>
+          </defs>
+          <circle cx="24" cy="24" r="21" fill="none" stroke="url(#lg)" stroke-width="1.2" opacity="0.55"/>
+          <circle cx="24" cy="24" r="15.5" fill="none" stroke="url(#lg)" stroke-width="2"/>
+          <circle cx="24" cy="24" r="7" fill="url(#lg)" opacity="0.9"/>
+          <path d="M24 3v6M24 39v6M3 24h6M39 24h6" stroke="url(#lg)" stroke-width="1.4" opacity="0.8"/>
+        </svg>
+      </div>
+      <div class="brand-txt">
+        <h1>HUAWEI Mate 90 Pro Max <span>典藏版</span></h1>
+        <p>ULTIMATE DESIGN · 3D 结构拆解可视化</p>
+      </div>
+    </div>
+
+    <nav class="top-actions">
+      <button class="tbtn" id="btnAuto" title="自动旋转">
+        <svg viewBox="0 0 24 24"><path d="M12 4a8 8 0 1 0 8 8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M12 1.5 15 4l-3 2.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>自动旋转</span>
+      </button>
+      <button class="tbtn" id="btnLabels" title="部件标注">
+        <svg viewBox="0 0 24 24"><path d="M3 7h9l3 3h6v10H3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7.5" cy="13.5" r="1.6" fill="currentColor"/></svg>
+        <span>部件标注</span>
+      </button>
+      <button class="tbtn" id="btnGuide" title="操作引导">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9.6 9.2a2.5 2.5 0 1 1 3.2 2.6c-.6.2-.8.7-.8 1.3v.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>
+        <span>操作引导</span>
+      </button>
+      <button class="tbtn" id="btnRail" title="部件清单">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </nav>
+  </header>
+
+  <!-- ============ 左侧部件清单 ============ -->
+  <aside id="rail">
+    <div class="rail-head">
+      <div>
+        <h2>部件清单</h2>
+        <p>COMPONENT LIST</p>
+      </div>
+      <span class="count" id="partCount">19</span>
+    </div>
+    <div class="rail-filter" id="railFilter"></div>
+    <div class="rail-list" id="partList"></div>
+    <div class="rail-foot">
+      <div class="meter"><span>拆解深度</span><b id="railPct">0%</b></div>
+      <div class="meter-bar"><i id="railBar"></i></div>
+    </div>
+  </aside>
+
+  <!-- ============ 右侧详情卡 ============ -->
+  <aside id="card">
+    <div class="card-inner">
+      <div class="card-top">
+        <span class="tag" id="cardTag">整机概览</span>
+        <button class="card-close" id="cardClose" title="收起">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="card-name-wrap">
+        <h3 id="cardName">HUAWEI Mate 90 Pro Max</h3>
+        <p id="cardEn">ULTIMATE DESIGN EDITION</p>
+      </div>
+
+      <div class="card-specs" id="cardSpec"></div>
+
+      <div class="card-desc-wrap">
+        <h4><span></span>说明</h4>
+        <p id="cardDesc"></p>
+      </div>
+
+      <div class="card-actions" id="cardActions">
+        <button class="abtn primary" id="btnFocus">
+          <svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+          <span>拆解此部件</span>
+        </button>
+        <button class="abtn" id="btnClose2">
+          <svg viewBox="0 0 24 24"><path d="M4 12h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <span>复位</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ 3D 标注 ============ -->
+  <svg id="leaders" aria-hidden="true"></svg>
+  <div id="labels"></div>
+
+  <!-- ============ 底部控制台 ============ -->
+  <div id="dock">
+    <div class="dock-glow"></div>
+    <div class="dock-row">
+      <div class="dock-group explode-group">
+        <div class="dg-head">
+          <span class="dg-title">拆解深度</span>
+          <span class="dg-val" id="explodeVal">0%</span>
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="explode" min="0" max="100" value="0" step="1" aria-label="拆解深度">
+          <div class="slider-track"><i id="sliderFill"></i><b id="sliderKnob"></b></div>
+        </div>
+      </div>
+
+      <div class="dock-sep"></div>
+
+      <div class="dock-group views">
+        <span class="dg-title">视角</span>
+        <div class="view-btns">
+          <button class="vp active" data-v="iso">立体</button>
+          <button class="vp" data-v="front">正面</button>
+          <button class="vp" data-v="back">背面</button>
+          <button class="vp" data-v="side">侧视</button>
+          <button class="vp" data-v="top">俯视</button>
+        </div>
+      </div>
+
+      <div class="dock-sep"></div>
+
+      <div class="dock-group dock-cta">
+        <button class="cta" id="btnExplodeAll">
+          <svg viewBox="0 0 24 24"><path d="M12 3v5M12 16v5M3 12h5M16 12h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="m7 7 3 3M17 7l-3 3M7 17l3-3M17 17l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/></svg>
+          <span>一键拆解</span>
+        </button>
+        <button class="cta ghost" id="btnReset" title="重置视角与拆解">
+          <svg viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 1.6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M4 4v6h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>重置</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 操作引导 ============ -->
+  <div id="guide" class="guide">
+    <div class="guide-card">
+      <div class="guide-head">
+        <h3>操作引导</h3>
+        <button id="guideClose" title="关闭">×</button>
+      </div>
+      <ul class="guide-list">
+        <li><i class="gi gi-drag"></i><div><b>拖拽旋转</b><span>按住鼠标左键拖动，360° 观察机身</span></div></li>
+        <li><i class="gi gi-zoom"></i><div><b>滚轮缩放</b><span>滚轮 / 双指捏合，拉近查看细节</span></div></li>
+        <li><i class="gi gi-click"></i><div><b>点击部件</b><span>点选任意零件，触发拆解动画并高亮</span></div></li>
+        <li><i class="gi gi-slide"></i><div><b>拆解深度</b><span>拖动底部滑块，逐层展开内部结构</span></div></li>
+        <li><i class="gi gi-list"></i><div><b>部件清单</b><span>左侧列表可快速定位，查看详细参数</span></div></li>
+      </ul>
+      <div class="guide-foot">
+        <span class="kbd">双击</span> 复位视角
+        <span class="kbd">R</span> 重置
+        <span class="kbd">空格</span> 一键拆解
+      </div>
+      <button class="guide-ok" id="guideOk">开始探索</button>
+    </div>
+  </div>
+
+  <!-- ============ 加载 ============ -->
+  <div id="loading">
+    <div class="load-inner">
+      <div class="load-ring">
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(200,170,110,0.14)" stroke-width="2"/>
+          <circle class="load-arc" cx="60" cy="60" r="52" fill="none" stroke="url(#lg)" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="70 260"/>
+          <circle cx="60" cy="60" r="34" fill="none" stroke="rgba(120,200,255,0.18)" stroke-width="1.2"/>
+        </svg>
+      </div>
+      <div class="load-title">HUAWEI Mate 90 Pro Max</div>
+      <div class="load-sub">正在构建三维结构模型…</div>
+      <div class="load-bar"><i id="loadFill"></i></div>
+      <div class="load-pct" id="loadPct">0%</div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+</div>
+
+<script src="vendor/three.min.js"></script>
+<script src="lib.js"></script>
+<script src="textures.js"></script>
+<script src="model.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

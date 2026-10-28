@@ -1,0 +1,27 @@
+{
+  "name": "flagship-phone-3d-teardown",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "shots": "node tools/live.cjs"
+  },
+  "dependencies": {
+    "esbuild": "^0.25.0",
+    "three": "^0.169.0"
+  },
+  "description": "Conceptual flagship smartphone 3D teardown visualizer — procedural Three.js model, click-to-explode, no external assets.",
+  "license": "MIT",
+  "keywords": [
+    "threejs",
+    "3d",
+    "teardown",
+    "exploded-view",
+    "webgl",
+    "procedural"
+  ],
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}

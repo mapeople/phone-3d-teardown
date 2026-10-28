@@ -1,0 +1,21 @@
+const path=require('path'),fs=require('fs');
+const { chromium, chromePath } = require('./_paths.cjs');
+const ROOT=path.resolve(__dirname,'..');
+(async()=>{
+ const b=await chromium.launch({executablePath: chromePath,args:['--no-sandbox','--disable-dev-shm-usage']});
+ const p=await b.newPage({viewport:{width:1600,height:950}});
+ await p.goto('file://'+path.join(ROOT,'dist/index.html'),{waitUntil:'load'});
+ await p.waitForTimeout(2000);
+ await p.evaluate(()=>{document.getElementById('guide').classList.add('hidden');});
+ const el=await p.$('.brand');
+ await el.screenshot({path:path.join(ROOT,'shots/crop_brand.png')});
+ const svg=await p.$('.logo');
+ await svg.screenshot({path:path.join(ROOT,'shots/crop_logo.png')});
+ const dock=await p.$('#dock');
+ await dock.screenshot({path:path.join(ROOT,'shots/crop_dock.png')});
+ const rail=await p.$('#rail');
+ await rail.screenshot({path:path.join(ROOT,'shots/crop_rail.png')});
+ const card=await p.$('#card');
+ await card.screenshot({path:path.join(ROOT,'shots/crop_card.png')});
+ await b.close(); console.log('ok');
+})();
